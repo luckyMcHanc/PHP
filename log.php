@@ -5,16 +5,29 @@ include_once('connect.php');
     $user = $_POST['email'];
     $password = $_POST['Password'];
     
-    echo "$user <br> $password";
-    $sql = "SELECT * FROM `users` WHERE email = '$user' AND password = '$password'";
+    $sql = "SELECT password FROM `users` WHERE email = '$user'";
     $result = $con->query($sql);
     if ($result->num_rows === 1)
     {
-        session_start();
-        header("location: index.php");
+        while ($row = $result->fetch_assoc())
+        {
+            $hash = $row["password"];
+        }
+        if (password_verify($password, $hash))
+            header("location: index.php");
+        else
+            {
+                echo '<script language="javascript">';
+                echo 'alert("Incorrect user name or password")';
+                echo '</script>';
+                header("location: Login.php");
+            }
     }
     else
     {
-        echo "error. $con->error";
+        echo '<script language="javascript">';
+        echo 'alert("Incorrect user name or password")';
+        echo '</script>';
+        header("location: Login.php");
     }
 ?>
